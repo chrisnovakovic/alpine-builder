@@ -14,8 +14,8 @@ RUN apk --no-cache add \
 # - python-rules (build-time)
     python3 python3-dev py3-pip
 
-# Create a non-root user (that can still run commands as root if required), and use it by default.
-# The user and group names are identical to those on GitHub's official Ubuntu runner images.
+# Create a non-root user (that can still run commands as root if required). The user and group names
+# and IDs are identical to those on GitHub's official Ubuntu runner images.
 RUN apk --no-cache add sudo && \
     addgroup -g 1001 runner && \
     adduser -u 1001 -G runner -D runner && \
@@ -23,6 +23,17 @@ RUN apk --no-cache add sudo && \
     echo 'Defaults:runner !requiretty' > /etc/sudoers.d/runner && \
     echo 'runner ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/runner && \
     chmod 0440 /etc/sudoers.d/runner
+
+# Work around https://github.com/actions/runner/issues/801 on arm64 by not overtly identifying as
+# Alpine Linux and installing a musl-linked Node.js interpreter from the Alpine repos for JavaScript
+# actions to use.
+RUN if [ "$(uname -m)" = aarch64 ]; then \
+        sed -i -e '/^ID=/s/alpine/enipla/" /etc/os-release && \
+        apk --no-cache add nodejs && \
+        mkdir -p /opt/bin && \
+        ln -s /usr/bin/node /opt/bin/node; \
+    fi
+
 USER runner
 WORKDIR /home/runner
 

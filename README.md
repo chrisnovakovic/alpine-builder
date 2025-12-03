@@ -1,8 +1,8 @@
 # Alpine Builder
 
 This repository builds [Alpine Linux](https://alpinelinux.org) container images with customisations to meet the needs of
-various [Please](https://please.build) build and test processes. The images are not guaranteed to be useful for any
-other purpose.
+various [Please](https://please.build)-related workflows on [GitHub Actions](https://github.com/features/actions). The
+images are not guaranteed to be useful for any other purpose.
 
 ## Changes to upstream
 
